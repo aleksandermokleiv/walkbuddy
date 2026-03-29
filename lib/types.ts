@@ -5,10 +5,11 @@ export interface UserProfile {
   displayName: string
   email: string
   photoURL: string
-  babyName: string
-  babyAgeMonths: number
+  climbingLevel: 'beginner' | 'intermediate' | 'advanced' | 'expert'
+  disciplines: string[]
+  homeGym: string
+  currentGymId?: string
   bio: string
-  neighborhood: string
   location: { lat: number; lng: number }
   isAvailableNow: boolean
   createdAt: Timestamp
@@ -24,6 +25,7 @@ export interface Match {
   proposedLocation: { lat: number; lng: number; name: string }
   createdAt: Timestamp
   initiatedBy: string
+  sessionType: 'gym' | 'outdoor' | 'bouldering' | 'multi-pitch'
 }
 
 export interface Message {

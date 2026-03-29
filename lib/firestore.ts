@@ -39,6 +39,10 @@ export const getAvailableParents = async (): Promise<UserProfile[]> => {
   return snap.docs.map((d) => d.data() as UserProfile)
 }
 
+export const updateUserGymCheckIn = async (uid: string, gymId: string | null): Promise<void> => {
+  await setDoc(doc(db, 'users', uid), { currentGymId: gymId }, { merge: true })
+}
+
 export const getUserByUsername = async (username: string): Promise<UserProfile | null> => {
   const q = query(collection(db, 'users'), where('username', '==', username))
   const snap = await getDocs(q)

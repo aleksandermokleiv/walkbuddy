@@ -19,6 +19,13 @@ import {
 import { UserProfile, Friendship, Group } from '@/lib/types'
 import Image from 'next/image'
 
+const LEVEL_COLORS: Record<string, string> = {
+  beginner: 'bg-green-100 text-green-700',
+  intermediate: 'bg-amber-100 text-amber-700',
+  advanced: 'bg-orange-100 text-orange-700',
+  expert: 'bg-red-100 text-red-700',
+}
+
 export default function FriendsPage() {
   return (
     <AuthGuard>
@@ -50,26 +57,25 @@ function FriendsContent() {
 
   const handleInvite = () => {
     if (!user) return
-    const link = `https://walkbuddy.app/join?ref=${user.uid}`
+    const link = `https://climbsquad.app/join?ref=${user.uid}`
     navigator.clipboard.writeText(link).then(() => {
-      showToast('Link copied! Share with friends 🎉')
+      showToast('Link copied! Share with climbers 🎉')
     })
   }
 
   return (
-    <div className="min-h-screen bg-amber-50 pb-32">
-      <div className="bg-white border-b border-amber-100 px-4 py-4">
-        <h1 className="text-xl font-bold text-gray-800">Friends</h1>
+    <div className="min-h-screen bg-stone-50 pb-32">
+      <div className="bg-white border-b border-stone-200 px-4 py-4">
+        <h1 className="text-3xl font-black tracking-tight text-stone-900">Friends</h1>
       </div>
 
-      {/* Tabs */}
-      <div className="flex bg-white border-b border-amber-100">
+      <div className="flex bg-white border-b border-stone-200">
         {(['friends', 'requests', 'groups'] as const).map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
             className={`flex-1 py-3 text-sm font-medium capitalize transition-colors relative ${
-              tab === t ? 'text-amber-600 border-b-2 border-amber-500' : 'text-gray-500'
+              tab === t ? 'text-amber-600 border-b-2 border-amber-500' : 'text-stone-500'
             }`}
           >
             {t}
@@ -108,19 +114,17 @@ function FriendsContent() {
         )}
       </div>
 
-      {/* Invite button */}
       <div className="fixed bottom-16 left-0 right-0 flex justify-center px-4 z-40">
         <button
           onClick={handleInvite}
-          className="bg-amber-500 hover:bg-amber-600 text-white font-semibold px-8 py-3 rounded-full shadow-lg transition-colors text-sm"
+          className="bg-amber-500 hover:bg-amber-600 active:scale-95 text-white font-bold px-8 py-3 rounded-full shadow-lg transition-all text-sm"
         >
-          Invite Friends 🔗
+          Invite Climbers 🔗
         </button>
       </div>
 
-      {/* Toast */}
       {toastMsg && (
-        <div className="fixed top-4 left-1/2 -translate-x-1/2 bg-gray-800 text-white px-4 py-2 rounded-full shadow-lg text-sm z-50">
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 bg-stone-800 text-white px-4 py-2 rounded-full shadow-lg text-sm z-50">
           {toastMsg}
         </div>
       )}
@@ -129,8 +133,6 @@ function FriendsContent() {
     </div>
   )
 }
-
-// ---- Friends Tab ----
 
 function FriendsTab({
   friends,
@@ -148,7 +150,7 @@ function FriendsTab({
   const [searching, setSearching] = useState(false)
   const [actionDone, setActionDone] = useState<Record<string, boolean>>({})
   const [friendProfiles, setFriendProfiles] = useState<Record<string, UserProfile>>({})
-  const [walkTarget, setWalkTarget] = useState<UserProfile | null>(null)
+  const [sessionTarget, setSessionTarget] = useState<UserProfile | null>(null)
 
   const acceptedFriends = friends.filter((f) => f.status === 'accepted')
 
@@ -203,54 +205,57 @@ function FriendsTab({
 
   return (
     <div className="space-y-4">
-      {/* Search */}
       <div className="flex gap-2">
         <div className="flex-1 relative">
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">@</span>
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400">@</span>
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
             placeholder="Search by username"
-            className="w-full border border-gray-200 rounded-xl pl-8 pr-4 py-2.5 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-amber-400"
+            className="w-full bg-stone-50 border border-stone-200 rounded-xl pl-8 pr-4 py-2.5 text-sm text-stone-800 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:bg-white transition-colors"
           />
         </div>
         <button
           onClick={handleSearch}
           disabled={searching}
-          className="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2.5 rounded-xl text-sm font-semibold transition-colors"
+          className="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2.5 rounded-xl text-sm font-bold transition-colors"
         >
           {searching ? '...' : 'Search'}
         </button>
       </div>
 
-      {/* Search result */}
       {searchResult && searchResult !== 'not-found' && (
-        <div className="bg-white rounded-2xl border border-amber-100 shadow-sm p-4 flex items-center gap-3">
+        <div className="bg-white rounded-2xl border border-stone-100 shadow-sm p-4 flex items-center gap-3">
           <div className="w-12 h-12 rounded-full overflow-hidden bg-amber-100 flex-shrink-0 flex items-center justify-center">
             {searchResult.photoURL ? (
               <Image src={searchResult.photoURL} alt={searchResult.displayName} width={48} height={48} className="object-cover rounded-full" />
             ) : (
-              <span className="text-xl">👶</span>
+              <span className="text-xl">🧗</span>
             )}
           </div>
           <div className="flex-1">
-            <p className="font-semibold text-gray-800 text-sm">{searchResult.displayName}</p>
+            <p className="font-semibold text-stone-800 text-sm">{searchResult.displayName}</p>
             <p className="text-xs text-amber-500">@{searchResult.username}</p>
+            {searchResult.climbingLevel && (
+              <span className={`inline-block text-xs font-bold px-2 py-0.5 rounded-full capitalize mt-0.5 ${LEVEL_COLORS[searchResult.climbingLevel]}`}>
+                {searchResult.climbingLevel}
+              </span>
+            )}
           </div>
           {searchResult.uid === currentUserId ? (
-            <span className="text-xs text-gray-400">That&apos;s you!</span>
+            <span className="text-xs text-stone-400">That&apos;s you!</span>
           ) : getFriendshipStatus(searchResult.uid) === 'friends' || actionDone[searchResult.uid] ? (
             <span className="text-xs text-green-600 font-medium">
               {actionDone[searchResult.uid] ? 'Request sent' : 'Already friends'}
             </span>
           ) : getFriendshipStatus(searchResult.uid) === 'sent' ? (
-            <span className="text-xs text-gray-500">Request sent</span>
+            <span className="text-xs text-stone-500">Request sent</span>
           ) : (
             <button
               onClick={() => handleAddFriend(searchResult.uid)}
-              className="bg-amber-500 hover:bg-amber-600 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors"
+              className="bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors"
             >
               Add Friend
             </button>
@@ -258,19 +263,18 @@ function FriendsTab({
         </div>
       )}
       {searchResult === 'not-found' && (
-        <p className="text-sm text-gray-500 text-center">No user found with that username.</p>
+        <p className="text-sm text-stone-500 text-center">No user found with that username.</p>
       )}
 
-      {/* Friends list */}
       {loading ? (
         <div className="space-y-3">
           {[1, 2].map((i) => (
-            <div key={i} className="bg-white rounded-2xl h-20 animate-pulse border border-amber-100" />
+            <div key={i} className="bg-white rounded-2xl h-20 animate-pulse border border-stone-100" />
           ))}
         </div>
       ) : acceptedFriends.length === 0 ? (
         <div className="text-center py-10">
-          <p className="text-gray-500 text-sm">Search for friends by @username above</p>
+          <p className="text-stone-500 text-sm">Search for friends by @username above</p>
         </div>
       ) : (
         <div className="space-y-3">
@@ -282,31 +286,40 @@ function FriendsTab({
             return (
               <div
                 key={f.friendshipId}
-                className="bg-white rounded-2xl border border-amber-100 shadow-sm p-4"
+                className="bg-white rounded-2xl border border-stone-100 shadow-sm p-4"
               >
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 rounded-full overflow-hidden bg-amber-100 flex-shrink-0 flex items-center justify-center">
                     {fp.photoURL ? (
                       <Image src={fp.photoURL} alt={fp.displayName} width={48} height={48} className="object-cover rounded-full" />
                     ) : (
-                      <span className="text-xl">👶</span>
+                      <span className="text-xl">🧗</span>
                     )}
                   </div>
-                  <div className="flex-1">
-                    <p className="font-semibold text-gray-800 text-sm">{fp.displayName}</p>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-stone-800 text-sm">{fp.displayName}</p>
                     <p className="text-xs text-amber-500">@{fp.username}</p>
-                    <p className="text-xs text-gray-500">
-                      {fp.babyName} • {fp.babyAgeMonths}mo
-                    </p>
+                    {fp.climbingLevel && (
+                      <div className="flex flex-wrap gap-1 mt-0.5">
+                        <span className={`text-xs font-bold px-1.5 py-0.5 rounded-full capitalize ${LEVEL_COLORS[fp.climbingLevel]}`}>
+                          {fp.climbingLevel}
+                        </span>
+                        {fp.disciplines?.slice(0, 2).map((d) => (
+                          <span key={d} className="text-xs bg-stone-100 text-stone-600 px-1.5 py-0.5 rounded-full capitalize">
+                            {d}
+                          </span>
+                        ))}
+                      </div>
+                    )}
                   </div>
                   {available && (
                     <div className="flex flex-col items-end gap-1">
-                      <span className="text-xs text-green-600 font-semibold">🚶 Out now!</span>
+                      <span className="text-xs text-green-600 font-semibold">At the wall 🧗</span>
                       <button
-                        onClick={() => setWalkTarget(fp)}
-                        className="text-xs bg-amber-500 hover:bg-amber-600 text-white px-2.5 py-1 rounded-lg transition-colors font-medium"
+                        onClick={() => setSessionTarget(fp)}
+                        className="text-xs bg-amber-500 hover:bg-amber-600 text-white px-2.5 py-1 rounded-lg transition-colors font-bold"
                       >
-                        Walk?
+                        Session?
                       </button>
                     </div>
                   )}
@@ -317,23 +330,20 @@ function FriendsTab({
         </div>
       )}
 
-      {/* Walk request modal from friend */}
-      {walkTarget && (
+      {sessionTarget && (
         <WalkRequestModal
           fromUserId={currentUserId}
-          toParent={walkTarget}
-          onClose={() => setWalkTarget(null)}
+          toParent={sessionTarget}
+          onClose={() => setSessionTarget(null)}
           onSuccess={() => {
-            setWalkTarget(null)
-            showToast('Walk request sent! 🎉')
+            setSessionTarget(null)
+            showToast('Session request sent! 🎉')
           }}
         />
       )}
     </div>
   )
 }
-
-// ---- Requests Tab ----
 
 function RequestsTab({
   friends,
@@ -378,7 +388,7 @@ function RequestsTab({
   if (incoming.length === 0 && outgoing.length === 0) {
     return (
       <div className="text-center py-10">
-        <p className="text-gray-500 text-sm">No pending requests</p>
+        <p className="text-stone-500 text-sm">No pending requests</p>
       </div>
     )
   }
@@ -387,36 +397,36 @@ function RequestsTab({
     <div className="space-y-4">
       {incoming.length > 0 && (
         <div>
-          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Incoming</p>
+          <p className="text-xs font-semibold uppercase tracking-wider text-stone-500 mb-2">Incoming</p>
           <div className="space-y-3">
             {incoming.map((f) => {
               const otherId = f.participants.find((p) => p !== currentUserId) ?? ''
               const fp = profiles[otherId]
               return (
-                <div key={f.friendshipId} className="bg-white rounded-2xl border border-amber-100 shadow-sm p-4">
+                <div key={f.friendshipId} className="bg-white rounded-2xl border border-stone-100 shadow-sm p-4">
                   <div className="flex items-center gap-3 mb-3">
                     <div className="w-10 h-10 rounded-full overflow-hidden bg-amber-100 flex-shrink-0 flex items-center justify-center">
                       {fp?.photoURL ? (
                         <Image src={fp.photoURL} alt={fp.displayName} width={40} height={40} className="object-cover rounded-full" />
                       ) : (
-                        <span className="text-lg">👶</span>
+                        <span className="text-lg">🧗</span>
                       )}
                     </div>
                     <div className="flex-1">
-                      <p className="font-semibold text-gray-800 text-sm">{fp?.displayName ?? 'Loading...'}</p>
+                      <p className="font-semibold text-stone-800 text-sm">{fp?.displayName ?? 'Loading...'}</p>
                       {fp?.username && <p className="text-xs text-amber-500">@{fp.username}</p>}
                     </div>
                   </div>
                   <div className="flex gap-2">
                     <button
                       onClick={() => handleDecline(f.friendshipId)}
-                      className="flex-1 border border-gray-200 text-gray-600 py-2 rounded-xl text-sm font-medium hover:bg-gray-50 transition-colors"
+                      className="flex-1 border border-stone-200 text-stone-600 py-2 rounded-xl text-sm font-medium hover:bg-stone-50 transition-colors"
                     >
                       Decline
                     </button>
                     <button
                       onClick={() => handleAccept(f.friendshipId)}
-                      className="flex-1 bg-amber-500 hover:bg-amber-600 text-white py-2 rounded-xl text-sm font-semibold transition-colors"
+                      className="flex-1 bg-amber-500 hover:bg-amber-600 text-white py-2 rounded-xl text-sm font-bold transition-colors"
                     >
                       Accept
                     </button>
@@ -430,23 +440,23 @@ function RequestsTab({
 
       {outgoing.length > 0 && (
         <div>
-          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Sent</p>
+          <p className="text-xs font-semibold uppercase tracking-wider text-stone-500 mb-2">Sent</p>
           <div className="space-y-3">
             {outgoing.map((f) => {
               const otherId = f.participants.find((p) => p !== currentUserId) ?? ''
               const fp = profiles[otherId]
               return (
-                <div key={f.friendshipId} className="bg-white rounded-2xl border border-amber-100 shadow-sm p-4 opacity-70">
+                <div key={f.friendshipId} className="bg-white rounded-2xl border border-stone-100 shadow-sm p-4 opacity-70">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full overflow-hidden bg-amber-100 flex-shrink-0 flex items-center justify-center">
                       {fp?.photoURL ? (
                         <Image src={fp.photoURL} alt={fp.displayName} width={40} height={40} className="object-cover rounded-full" />
                       ) : (
-                        <span className="text-lg">👶</span>
+                        <span className="text-lg">🧗</span>
                       )}
                     </div>
                     <div className="flex-1">
-                      <p className="font-semibold text-gray-800 text-sm">{fp?.displayName ?? 'Loading...'}</p>
+                      <p className="font-semibold text-stone-800 text-sm">{fp?.displayName ?? 'Loading...'}</p>
                       {fp?.username && <p className="text-xs text-amber-500">@{fp.username}</p>}
                     </div>
                     <button
@@ -465,8 +475,6 @@ function RequestsTab({
     </div>
   )
 }
-
-// ---- Groups Tab ----
 
 function GroupsTab({
   groups,
@@ -528,7 +536,7 @@ function GroupsTab({
       setShowModal(false)
       setGroupName('')
       setSelectedMembers([])
-      showToast('Group created!')
+      showToast('Climbing crew created!')
     } finally {
       setCreating(false)
     }
@@ -545,14 +553,14 @@ function GroupsTab({
     <div className="space-y-4">
       <button
         onClick={() => setShowModal(true)}
-        className="w-full bg-amber-500 hover:bg-amber-600 text-white font-semibold py-3 rounded-2xl transition-colors text-sm"
+        className="w-full bg-amber-500 hover:bg-amber-600 active:scale-95 text-white font-bold py-3 rounded-2xl transition-all text-sm shadow-md"
       >
-        New Group +
+        New Climbing Crew +
       </button>
 
       {groups.length === 0 ? (
         <div className="text-center py-10">
-          <p className="text-gray-500 text-sm">No groups yet. Create one above!</p>
+          <p className="text-stone-500 text-sm">No crews yet. Create one above!</p>
         </div>
       ) : (
         <div className="space-y-3">
@@ -561,13 +569,12 @@ function GroupsTab({
               .filter((uid) => uid !== currentUserId)
               .map((uid) => groupMemberProfiles[uid])
               .filter(Boolean) as UserProfile[]
-            const outNowCount = memberProfiles.filter(isAvailable).length
+            const atWallCount = memberProfiles.filter(isAvailable).length
             const avatarProfiles = memberProfiles.slice(0, 3)
 
             return (
-              <div key={g.groupId} className="bg-white rounded-2xl border border-amber-100 shadow-sm p-4">
+              <div key={g.groupId} className="bg-white rounded-2xl border border-stone-100 shadow-sm p-4">
                 <div className="flex items-center gap-3">
-                  {/* Stacked avatars */}
                   <div className="flex -space-x-2">
                     {avatarProfiles.map((p) => (
                       <div
@@ -577,17 +584,17 @@ function GroupsTab({
                         {p.photoURL ? (
                           <Image src={p.photoURL} alt={p.displayName} width={36} height={36} className="object-cover rounded-full" />
                         ) : (
-                          <span className="text-sm">👶</span>
+                          <span className="text-sm">🧗</span>
                         )}
                       </div>
                     ))}
                   </div>
                   <div className="flex-1">
-                    <p className="font-semibold text-gray-800 text-sm">{g.name}</p>
-                    <p className="text-xs text-gray-500">{g.members.length} members</p>
+                    <p className="font-semibold text-stone-800 text-sm">{g.name}</p>
+                    <p className="text-xs text-stone-500">{g.members.length} members</p>
                   </div>
-                  {outNowCount > 0 && (
-                    <span className="text-xs text-green-600 font-semibold">{outNowCount} out now 🚶</span>
+                  {atWallCount > 0 && (
+                    <span className="text-xs text-green-600 font-semibold">{atWallCount} at the wall 🧗</span>
                   )}
                 </div>
               </div>
@@ -596,28 +603,27 @@ function GroupsTab({
         </div>
       )}
 
-      {/* Create group modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center p-4">
           <div className="bg-white rounded-t-3xl sm:rounded-3xl w-full max-w-md shadow-2xl">
             <div className="p-6 space-y-4">
               <div className="flex items-center justify-between">
-                <h2 className="text-xl font-bold text-gray-800">New Group</h2>
-                <button onClick={() => setShowModal(false)} className="text-gray-400 hover:text-gray-600 text-2xl">×</button>
+                <h2 className="text-xl font-black tracking-tight text-stone-800">New Climbing Crew</h2>
+                <button onClick={() => setShowModal(false)} className="text-stone-400 hover:text-stone-600 text-2xl">×</button>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Group Name</label>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-stone-500 mb-1">Crew Name</label>
                 <input
                   type="text"
                   value={groupName}
                   onChange={(e) => setGroupName(e.target.value)}
-                  placeholder="Morning Walkers"
-                  className="w-full border border-gray-200 rounded-xl px-4 py-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-amber-400 text-sm"
+                  placeholder="Thursday Crushers"
+                  className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-stone-800 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:bg-white transition-colors text-sm"
                 />
               </div>
               {acceptedFriendIds.length > 0 && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Add Friends</label>
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-stone-500 mb-2">Add Friends</label>
                   <div className="space-y-2 max-h-48 overflow-y-auto">
                     {acceptedFriendIds.map((uid) => {
                       const fp = friendProfiles[uid]
@@ -633,10 +639,10 @@ function GroupsTab({
                             {fp?.photoURL ? (
                               <Image src={fp.photoURL} alt={fp.displayName} width={32} height={32} className="object-cover rounded-full" />
                             ) : (
-                              <span className="text-sm">👶</span>
+                              <span className="text-sm">🧗</span>
                             )}
                           </div>
-                          <span className="text-sm text-gray-800">{fp?.displayName ?? uid}</span>
+                          <span className="text-sm text-stone-800">{fp?.displayName ?? uid}</span>
                         </label>
                       )
                     })}
@@ -646,9 +652,9 @@ function GroupsTab({
               <button
                 onClick={handleCreate}
                 disabled={!groupName.trim() || creating}
-                className="w-full bg-amber-500 hover:bg-amber-600 disabled:opacity-50 text-white font-semibold py-3 rounded-xl transition-colors"
+                className="w-full bg-amber-500 hover:bg-amber-600 active:scale-95 disabled:opacity-50 text-white font-bold py-3 rounded-2xl transition-all"
               >
-                {creating ? 'Creating...' : 'Create Group'}
+                {creating ? 'Creating...' : 'Create Crew'}
               </button>
             </div>
           </div>

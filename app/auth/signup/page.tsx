@@ -30,10 +30,10 @@ export default function SignupPage() {
         email,
         displayName,
         photoURL: '',
-        babyName: '',
-        babyAgeMonths: 0,
+        climbingLevel: 'beginner',
+        disciplines: [],
+        homeGym: '',
         bio: '',
-        neighborhood: '',
         location: { lat: 0, lng: 0 },
         isAvailableNow: false,
       })
@@ -62,10 +62,10 @@ export default function SignupPage() {
           email: cred.user.email ?? '',
           displayName: cred.user.displayName ?? '',
           photoURL: cred.user.photoURL ?? '',
-          babyName: '',
-          babyAgeMonths: 0,
+          climbingLevel: 'beginner',
+          disciplines: [],
+          homeGym: '',
           bio: '',
-          neighborhood: '',
           location: { lat: 0, lng: 0 },
           isAvailableNow: false,
         })
@@ -81,70 +81,70 @@ export default function SignupPage() {
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-amber-50 to-orange-50 flex flex-col items-center justify-center px-6">
+    <main className="min-h-screen bg-gradient-to-b from-stone-900 via-stone-800 to-amber-900 flex flex-col items-center justify-center px-6">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
-          <div className="text-5xl mb-3">👶</div>
-          <h1 className="text-2xl font-bold text-amber-700">Join WalkBuddy</h1>
-          <p className="text-gray-500 text-sm mt-1">Find walking companions near you</p>
+          <div className="text-5xl mb-3">🧗</div>
+          <h1 className="text-2xl font-black tracking-tight text-white">Join Climb Squad</h1>
+          <p className="text-stone-400 text-sm mt-1">Find climbers at your level, nearby</p>
         </div>
-        <div className="bg-white rounded-3xl shadow-sm border border-amber-100 p-6">
+        <div className="bg-stone-800/80 backdrop-blur border border-stone-700 rounded-3xl p-6">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Your Name</label>
+              <label className="block text-xs font-semibold uppercase tracking-wider text-stone-300 mb-1">Your Name</label>
               <input
                 type="text"
                 value={displayName}
                 onChange={(e) => setDisplayName(e.target.value)}
                 required
-                placeholder="Sarah"
-                className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-400 text-gray-800"
+                placeholder="Alex"
+                className="w-full bg-stone-700/50 border border-stone-600 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-400 text-white placeholder-stone-400 transition-colors"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+              <label className="block text-xs font-semibold uppercase tracking-wider text-stone-300 mb-1">Email</label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 placeholder="you@example.com"
-                className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-400 text-gray-800"
+                className="w-full bg-stone-700/50 border border-stone-600 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-400 text-white placeholder-stone-400 transition-colors"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+              <label className="block text-xs font-semibold uppercase tracking-wider text-stone-300 mb-1">Password</label>
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 placeholder="At least 6 characters"
-                className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-400 text-gray-800"
+                className="w-full bg-stone-700/50 border border-stone-600 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-400 text-white placeholder-stone-400 transition-colors"
               />
             </div>
             {error && (
-              <p className="text-red-500 text-sm bg-red-50 rounded-lg p-3">{error}</p>
+              <p className="text-red-300 text-sm bg-red-900/50 rounded-lg p-3">{error}</p>
             )}
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-amber-500 hover:bg-amber-600 disabled:opacity-50 text-white font-semibold py-3.5 rounded-xl transition-colors shadow-sm"
+              className="w-full bg-amber-500 hover:bg-amber-600 active:scale-95 disabled:opacity-50 text-white font-bold py-3.5 rounded-2xl transition-all shadow-md"
             >
-              {loading ? 'Creating account...' : 'Create Account 🌟'}
+              {loading ? 'Creating account...' : 'Create Account 🧗'}
             </button>
           </form>
 
           <div className="flex items-center gap-3 my-4">
-            <div className="flex-1 h-px bg-gray-200" />
-            <span className="text-xs text-gray-400 font-medium">or</span>
-            <div className="flex-1 h-px bg-gray-200" />
+            <div className="flex-1 h-px bg-stone-600" />
+            <span className="text-xs text-stone-500 font-medium">or</span>
+            <div className="flex-1 h-px bg-stone-600" />
           </div>
 
           <button
             onClick={handleGoogle}
             disabled={googleLoading}
-            className="w-full flex items-center justify-center gap-3 border border-gray-200 rounded-xl py-3 text-gray-700 font-semibold hover:bg-gray-50 transition-colors disabled:opacity-50"
+            className="w-full flex items-center justify-center gap-3 border border-stone-600 rounded-xl py-3 text-stone-200 font-semibold hover:bg-stone-700 transition-colors disabled:opacity-50"
           >
             <svg className="w-5 h-5" viewBox="0 0 24 24">
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -155,9 +155,9 @@ export default function SignupPage() {
             {googleLoading ? 'Signing in...' : 'Continue with Google'}
           </button>
         </div>
-        <p className="text-center text-sm text-gray-500 mt-4">
+        <p className="text-center text-sm text-stone-400 mt-4">
           Already have an account?{' '}
-          <Link href="/auth/login" className="text-amber-600 font-semibold hover:underline">
+          <Link href="/auth/login" className="text-amber-400 font-semibold hover:underline">
             Sign in
           </Link>
         </p>

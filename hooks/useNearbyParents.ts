@@ -23,8 +23,7 @@ export function useNearbyParents(
   userLocation: { lat: number; lng: number } | null,
   currentUserId: string | null,
   radiusKm = 5,
-  minAgeMonths = 0,
-  maxAgeMonths = 24
+  disciplines: string[] = []
 ) {
   const [parents, setParents] = useState<UserProfile[]>([])
   const [loading, setLoading] = useState(true)
@@ -41,8 +40,10 @@ export function useNearbyParents(
           const expiresAt = p.availabilityExpiresAt.toDate()
           if (expiresAt < now) return false
         }
-        // Age filter
-        if (p.babyAgeMonths < minAgeMonths || p.babyAgeMonths > maxAgeMonths) return false
+        // Disciplines filter
+        if (disciplines.length > 0) {
+          if (!p.disciplines?.some((d) => disciplines.includes(d))) return false
+        }
         const dist = haversineDistance(
           userLocation.lat, userLocation.lng,
           p.location.lat, p.location.lng
@@ -52,7 +53,7 @@ export function useNearbyParents(
       setParents(nearby)
       setLoading(false)
     })
-  }, [userLocation, currentUserId, radiusKm, minAgeMonths, maxAgeMonths])
+  }, [userLocation, currentUserId, radiusKm, disciplines])
 
   return { parents, loading }
 }

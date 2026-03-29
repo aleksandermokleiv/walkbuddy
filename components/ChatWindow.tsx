@@ -45,27 +45,27 @@ export default function ChatWindow({ matchId, currentUserId, otherUser }: ChatWi
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="bg-white border-b border-amber-100 px-4 py-3 flex items-center gap-3">
+      <div className="bg-white border-b border-stone-100 px-4 py-3 flex items-center gap-3">
         <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center overflow-hidden">
           {otherUser?.photoURL ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={otherUser.photoURL} alt={otherUser.displayName} className="w-full h-full object-cover" />
           ) : (
-            <span>👶</span>
+            <span>🧗</span>
           )}
         </div>
         <div>
-          <p className="font-semibold text-gray-800">{otherUser?.displayName ?? 'Walk Buddy'}</p>
-          <p className="text-xs text-gray-500">Walk partner</p>
+          <p className="font-semibold text-stone-800">{otherUser?.displayName ?? 'Climbing Partner'}</p>
+          <p className="text-xs text-stone-500">Climbing partner</p>
         </div>
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3 bg-amber-50">
+      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3 bg-stone-50">
         {messages.length === 0 && (
-          <div className="text-center text-gray-500 text-sm mt-8">
-            <p className="text-3xl mb-2">👋</p>
-            <p>Say hello to your walk buddy!</p>
+          <div className="text-center text-stone-500 text-sm mt-8">
+            <p className="text-3xl mb-2">🧗</p>
+            <p>Start planning your session! 🧗</p>
           </div>
         )}
         {messages.map((msg) => {
@@ -78,12 +78,12 @@ export default function ChatWindow({ matchId, currentUserId, otherUser }: ChatWi
                   className={`px-4 py-2.5 rounded-2xl text-sm ${
                     isMine
                       ? 'bg-amber-500 text-white rounded-br-sm'
-                      : 'bg-white text-gray-800 shadow-sm rounded-bl-sm'
+                      : 'bg-white text-stone-800 shadow-sm rounded-bl-sm'
                   }`}
                 >
                   {msg.text}
                 </div>
-                <span className="text-xs text-gray-400">{time}</span>
+                <span className="text-xs text-stone-400">{time}</span>
               </div>
             </div>
           )
@@ -92,13 +92,13 @@ export default function ChatWindow({ matchId, currentUserId, otherUser }: ChatWi
       </div>
 
       {/* Input */}
-      <form onSubmit={handleSend} className="bg-white border-t border-amber-100 px-4 py-3 flex gap-2">
+      <form onSubmit={handleSend} className="bg-white border-t border-stone-100 px-4 py-3 flex gap-2">
         <input
           type="text"
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder="Type a message..."
-          className="flex-1 border border-gray-200 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400"
+          className="flex-1 bg-stone-50 border border-stone-200 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 focus:bg-white transition-colors"
         />
         <button
           type="submit"

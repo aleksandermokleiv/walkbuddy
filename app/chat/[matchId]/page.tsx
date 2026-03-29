@@ -56,7 +56,7 @@ function ChatContent() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-amber-50">
+      <div className="flex items-center justify-center min-h-screen bg-stone-50">
         <div className="w-8 h-8 border-4 border-amber-400 border-t-transparent rounded-full animate-spin" />
       </div>
     )
@@ -64,9 +64,9 @@ function ChatContent() {
 
   if (error) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-amber-50 px-6 text-center">
+      <div className="flex flex-col items-center justify-center min-h-screen bg-stone-50 px-6 text-center">
         <div className="text-4xl mb-3">😔</div>
-        <p className="text-gray-600 mb-4">{error}</p>
+        <p className="text-stone-600 mb-4">{error}</p>
         <Link href="/chat" className="text-amber-600 font-semibold hover:underline">
           ← Back to messages
         </Link>
@@ -76,8 +76,7 @@ function ChatContent() {
 
   return (
     <div className="flex flex-col h-screen bg-white">
-      {/* Back button */}
-      <div className="bg-white border-b border-amber-100 px-4 py-2">
+      <div className="bg-white border-b border-stone-100 px-4 py-2">
         <Link href="/chat" className="text-amber-600 hover:underline text-sm font-medium flex items-center gap-1">
           ← Back
         </Link>

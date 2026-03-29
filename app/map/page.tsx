@@ -10,7 +10,17 @@ import { useMatches } from '@/hooks/useMatches'
 import { useFriends } from '@/hooks/useFriends'
 import { getUserProfile, updateUserProfile } from '@/lib/firestore'
 import { UserProfile } from '@/lib/types'
+import { GYMS } from '@/lib/gyms'
 import { Timestamp } from 'firebase/firestore'
+
+const DISCIPLINE_OPTIONS = [
+  { value: 'sport', label: 'Sport', emoji: '🏔️' },
+  { value: 'bouldering', label: 'Bouldering', emoji: '🪨' },
+  { value: 'trad', label: 'Trad', emoji: '🪛' },
+  { value: 'top-rope', label: 'Top-rope', emoji: '🔗' },
+  { value: 'multi-pitch', label: 'Multi-pitch', emoji: '⛰️' },
+  { value: 'ice', label: 'Ice', emoji: '🧊' },
+]
 
 export default function MapPage() {
   return (
@@ -25,17 +35,14 @@ function MapContent() {
   const [profile, setProfile] = useState<UserProfile | null>(null)
   const [profileLoaded, setProfileLoaded] = useState(false)
 
-  // Filter state
-  const [minAge, setMinAge] = useState(0)
-  const [maxAge, setMaxAge] = useState(24)
+  const [selectedDisciplines, setSelectedDisciplines] = useState<string[]>([])
   const [showFilter, setShowFilter] = useState(false)
 
   const { parents, loading } = useNearbyParents(
     profile?.location ?? null,
     user?.uid ?? null,
     5,
-    minAge,
-    maxAge
+    selectedDisciplines
   )
   const { matches } = useMatches(user?.uid ?? null)
   const { friendships } = useFriends(user?.uid ?? null)
@@ -56,7 +63,6 @@ function MapContent() {
     })
   }, [user])
 
-  // Auto-off: if availability has expired, update Firestore
   useEffect(() => {
     if (!user || !profile) return
     if (profile.isAvailableNow && profile.availabilityExpiresAt) {
@@ -82,26 +88,27 @@ function MapContent() {
     await updateUserProfile(user.uid, update)
     setProfile((prev) =>
       prev
-        ? {
-            ...prev,
-            isAvailableNow: next,
-            availabilityExpiresAt: update.availabilityExpiresAt,
-          }
+        ? { ...prev, isAvailableNow: next, availabilityExpiresAt: update.availabilityExpiresAt }
         : prev
     )
   }
 
-  const defaultCenter = { lat: 40.7128, lng: -74.006 }
+  const toggleDiscipline = (value: string) => {
+    setSelectedDisciplines((prev) =>
+      prev.includes(value) ? prev.filter((d) => d !== value) : [...prev, value]
+    )
+  }
+
+  const defaultCenter = { lat: 59.9139, lng: 10.7522 }
   const center = profile?.location?.lat ? profile.location : defaultCenter
 
-  const filterActive = minAge !== 0 || maxAge !== 24
+  const filterActive = selectedDisciplines.length > 0
 
   return (
     <div className="flex flex-col h-screen">
-      {/* Map fills the screen */}
       <div className="flex-1 relative" style={{ paddingBottom: '64px' }}>
         {!profileLoaded ? (
-          <div className="flex items-center justify-center h-full bg-amber-50">
+          <div className="flex items-center justify-center h-full bg-stone-50">
             <div className="w-8 h-8 border-4 border-amber-400 border-t-transparent rounded-full animate-spin" />
           </div>
         ) : (
@@ -110,88 +117,83 @@ function MapContent() {
             parents={parents}
             currentUserId={user?.uid ?? ''}
             profileLoaded={profileLoaded}
+            gyms={GYMS}
           />
         )}
 
-        {/* Availability pill - top center */}
+        {/* Availability pill */}
         {profileLoaded && (
           <button
             onClick={toggleAvailability}
             className={`absolute top-4 left-1/2 -translate-x-1/2 z-10 px-5 py-2.5 rounded-full shadow-lg font-semibold text-sm transition-all ${
               profile?.isAvailableNow
                 ? 'bg-green-500 text-white'
-                : 'bg-white text-gray-600'
+                : 'bg-white text-stone-600'
             }`}
           >
-            {profile?.isAvailableNow ? '🟢 I\'m heading out!' : '⚪ I\'m staying in'}
+            {profile?.isAvailableNow ? '🧗 I\'m at the wall!' : '💤 Not climbing today'}
           </button>
         )}
 
-        {/* Filter button - top right */}
+        {/* Filter button */}
         {profileLoaded && (
           <button
             onClick={() => setShowFilter((v) => !v)}
             className={`absolute top-4 right-4 z-10 px-3 py-2 rounded-full shadow-lg font-semibold text-sm transition-all ${
-              filterActive ? 'bg-amber-400 text-white' : 'bg-white text-gray-600'
+              filterActive ? 'bg-amber-400 text-white' : 'bg-white text-stone-600'
             }`}
           >
             🔽 Filter
           </button>
         )}
 
-        {/* Filter dropdown */}
+        {/* Filter bottom sheet */}
         {showFilter && (
-          <div className="absolute top-16 right-4 z-20 bg-white rounded-2xl shadow-xl border border-amber-100 p-4 w-56">
-            <p className="text-sm font-semibold text-gray-700 mb-3">Baby Age Filter</p>
-            <div className="space-y-3">
-              <div>
-                <label className="text-xs text-gray-500">Min age (months)</label>
-                <select
-                  value={minAge}
-                  onChange={(e) => setMinAge(Number(e.target.value))}
-                  className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-sm text-gray-800 mt-1 focus:outline-none focus:ring-2 focus:ring-amber-400"
+          <div className="absolute top-16 right-4 z-20 bg-white rounded-2xl shadow-xl border border-stone-100 p-4 w-64">
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-sm font-bold text-stone-700">Filter by Discipline</p>
+              {filterActive && (
+                <button
+                  onClick={() => setSelectedDisciplines([])}
+                  className="text-xs text-amber-600 font-medium hover:text-amber-700"
                 >
-                  {Array.from({ length: 25 }, (_, i) => (
-                    <option key={i} value={i}>{i === 0 ? 'Newborn' : `${i}mo`}</option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label className="text-xs text-gray-500">Max age (months)</label>
-                <select
-                  value={maxAge}
-                  onChange={(e) => setMaxAge(Number(e.target.value))}
-                  className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-sm text-gray-800 mt-1 focus:outline-none focus:ring-2 focus:ring-amber-400"
+                  Clear
+                </button>
+              )}
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {DISCIPLINE_OPTIONS.map((d) => (
+                <button
+                  key={d.value}
+                  onClick={() => toggleDiscipline(d.value)}
+                  className={`flex items-center gap-1 px-2.5 py-1.5 rounded-xl border-2 text-xs font-semibold transition-all ${
+                    selectedDisciplines.includes(d.value)
+                      ? 'border-amber-400 bg-amber-50 text-amber-700'
+                      : 'border-stone-200 text-stone-600 hover:border-stone-300'
+                  }`}
                 >
-                  {Array.from({ length: 25 }, (_, i) => (
-                    <option key={i} value={i}>{i === 0 ? 'Newborn' : `${i}mo`}</option>
-                  ))}
-                </select>
-              </div>
-              <button
-                onClick={() => { setMinAge(0); setMaxAge(24); }}
-                className="w-full text-xs text-amber-600 hover:text-amber-700 font-medium"
-              >
-                Reset to default
-              </button>
+                  <span>{d.emoji}</span>
+                  <span>{d.label}</span>
+                </button>
+              ))}
             </div>
           </div>
         )}
 
-        {/* Bottom-left chip: nearby count */}
+        {/* Nearby climbers count */}
         {profileLoaded && (
-          <div className="absolute bottom-20 left-4 z-10 bg-white rounded-full px-3 py-1.5 shadow text-sm font-medium text-gray-700">
-            👶 {parents.length} nearby
+          <div className="absolute bottom-20 left-4 z-10 bg-white rounded-full px-3 py-1.5 shadow text-sm font-medium text-stone-700">
+            🧗 {parents.length} climbers nearby
           </div>
         )}
 
         {/* Empty state overlay */}
         {profileLoaded && !loading && parents.length === 0 && (
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
-            <div className="bg-white rounded-2xl shadow-lg border border-amber-100 p-6 mx-8 text-center pointer-events-auto">
-              <p className="text-lg font-semibold text-gray-800">No one nearby right now 👀</p>
-              <p className="text-sm text-gray-500 mt-2">
-                Turn on availability to appear on the map, or check back later!
+            <div className="bg-white rounded-2xl shadow-lg border border-stone-100 p-6 mx-8 text-center pointer-events-auto">
+              <p className="text-lg font-bold text-stone-800">No climbers nearby right now 🧗</p>
+              <p className="text-sm text-stone-500 mt-2">
+                Turn on availability to appear on the map!
               </p>
             </div>
           </div>
