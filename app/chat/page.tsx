@@ -30,7 +30,7 @@ function ChatListContent() {
     <div className="min-h-screen bg-amber-50 pb-24">
       <div className="bg-white border-b border-amber-100 px-4 py-4">
         <h1 className="text-xl font-bold text-gray-800">Messages</h1>
-        <p className="text-sm text-gray-500">Chat with your walk buddies</p>
+        <p className="text-sm text-gray-500">Chat with your climbing crew</p>
       </div>
 
       <div className="max-w-sm mx-auto px-4 py-4">
@@ -44,7 +44,7 @@ function ChatListContent() {
           <div className="text-center py-12">
             <div className="text-5xl mb-3">💬</div>
             <p className="text-gray-600 font-medium">No active chats</p>
-            <p className="text-gray-400 text-sm mt-1">Accept a walk match to start chatting</p>
+            <p className="text-gray-400 text-sm mt-1">Accept a session request to start chatting</p>
             <Link
               href="/matches"
               className="inline-block mt-4 bg-amber-500 hover:bg-amber-600 text-white font-semibold px-6 py-2.5 rounded-xl transition-colors"
@@ -82,12 +82,12 @@ function ChatListItem({ match, currentUserId }: { match: Match; currentUserId: s
             // eslint-disable-next-line @next/next/no-img-element
             <img src={otherUser.photoURL} alt={otherUser.displayName} className="w-full h-full object-cover" />
           ) : (
-            <span className="text-xl">👶</span>
+            <span className="text-xl">🧗</span>
           )}
         </div>
         <div className="flex-1">
-          <p className="font-semibold text-gray-800">{otherUser?.displayName ?? 'Walk Buddy'}</p>
-          <p className="text-xs text-green-600 font-medium">Walk confirmed 🚶</p>
+          <p className="font-semibold text-gray-800">{otherUser?.displayName ?? 'Climbing Partner'}</p>
+          <p className="text-xs text-green-600 font-medium">Session confirmed 🧗</p>
         </div>
         <svg className="w-5 h-5 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />

@@ -1,16 +1,21 @@
-# WalkBuddy
+# Climb Squad
 
-WalkBuddy is a community platform for new parents to find walking companions nearby. Parents can sign up, set their availability, appear on a live map, send and receive walk requests, and chat with confirmed walk partners — all from a mobile-first web app.
+Climb Squad is a community platform for finding climbing partners nearby. Climbers can sign up, set their availability, appear on a live map, send and receive session requests, and chat with confirmed climbing partners — all from a mobile-first web app.
 
 ## Features
 
-- Email/password authentication via Firebase Auth
-- Onboarding flow: baby info, profile photo upload, location sharing
-- Live map showing available parents within 5 km (Google Maps)
-- Walk request system with proposed time and meeting spot
-- Accept/decline incoming requests
-- Real-time chat between confirmed walk partners
-- Availability toggle to appear/disappear from the map
+- Email/password and Google authentication via Firebase Auth
+- Onboarding: climbing level, disciplines, home gym, profile photo, location
+- Live map of available climbers within 5km with muted stone-toned style
+- Hardcoded Oslo/Norway gym markers (Klatreverket, Oslo Klatresenter, Bergsprekken, etc.)
+- Session request system with type (gym / outdoor / bouldering / multi-pitch), time, and location
+- Discipline and availability filter on the map
+- Accept/decline incoming session requests
+- Real-time chat between confirmed climbing partners
+- Friends system: search by @username, friend requests, "At the wall" live badge
+- Walking groups → Climbing Crews
+- Availability toggle with 2-hour auto-expiry
+- Profile editing
 
 ## Tech Stack
 
@@ -38,82 +43,31 @@ NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=
 ## Firebase Setup
 
 1. Go to [Firebase Console](https://console.firebase.google.com) and create a new project.
-2. **Authentication**: Enable Email/Password sign-in under Authentication > Sign-in method.
-3. **Firestore**: Create a Firestore database in production mode. Deploy the security rules from `firestore.rules`:
+2. **Authentication**: Enable Email/Password and Google sign-in under Authentication → Sign-in method.
+3. **Firestore**: Create a Firestore database. Deploy the security rules from `firestore.rules` by pasting into the Firestore Rules editor in the console, or via CLI:
    ```bash
-   firebase deploy --only firestore:rules
+   firebase deploy --only firestore:rules,firestore:indexes
    ```
-   Or paste the contents of `firestore.rules` into the Firestore Rules editor in the console.
 4. **Storage**: Enable Firebase Storage (used for profile photo uploads).
-5. In Project Settings > General, find your web app config and copy the values into `.env.local`.
+5. In Project Settings → General, find your web app config and copy the values into `.env.local`.
 
 ## Google Maps Setup
 
 1. Go to [Google Cloud Console](https://console.cloud.google.com).
-2. Create or select a project.
-3. Enable the **Maps JavaScript API**.
-4. Create an API key under Credentials and copy it to `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY`.
-5. Optionally restrict the key to your domain for production.
+2. Enable the **Maps JavaScript API**.
+3. Create an API key under Credentials and copy it to `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY`.
 
 ## Running Locally
 
 ```bash
-# 1. Clone and enter the directory
-cd "Cursor test 2"
-
-# 2. Copy and fill in environment variables
 cp .env.local.example .env.local
-# Edit .env.local with your Firebase and Google Maps credentials
-
-# 3. Install dependencies
+# Fill in .env.local with your credentials
 npm install
-
-# 4. Start the development server
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) in your browser.
-
-## Project Structure
-
-```
-app/
-  page.tsx                  # Landing page (redirects to dashboard if logged in)
-  layout.tsx                # Root layout
-  auth/
-    login/page.tsx          # Sign-in page
-    signup/page.tsx         # Registration page
-  onboarding/page.tsx       # 3-step profile setup after sign-up
-  dashboard/page.tsx        # Home/profile page with availability toggle
-  map/page.tsx              # Live map of nearby available parents
-  matches/page.tsx          # Walk request management (pending/accepted/past)
-  chat/
-    page.tsx                # Chat list (accepted matches only)
-    [matchId]/page.tsx      # Individual chat window
-
-components/
-  AuthGuard.tsx             # Redirects unauthenticated users to login
-  Navbar.tsx                # Fixed bottom navigation bar
-  ParentCard.tsx            # Profile card shown on map marker click
-  WalkRequestModal.tsx      # Modal to propose a walk (date, time, location)
-  MapView.tsx               # Google Maps view with parent markers
-  ChatWindow.tsx            # Real-time chat UI
-
-hooks/
-  useAuth.ts                # Firebase auth state
-  useMatches.ts             # Real-time Firestore matches subscription
-  useMessages.ts            # Real-time Firestore messages subscription
-  useNearbyParents.ts       # Fetches available parents filtered by radius
-
-lib/
-  types.ts                  # TypeScript interfaces (UserProfile, Match, Message)
-  firebase.ts               # Firebase app initialization
-  auth.ts                   # Auth helper functions
-  firestore.ts              # Firestore CRUD and real-time helpers
-
-firestore.rules             # Firestore security rules
-```
+Open [http://localhost:3000](http://localhost:3000).
 
 ## Deploying
 
-The easiest deployment is [Vercel](https://vercel.com). Connect your repository and add all environment variables in the Vercel project settings.
+Deploy to [Vercel](https://vercel.com) by connecting your GitHub repository and adding all environment variables in the Vercel project settings. After deploying, add your Vercel domain to Firebase → Authentication → Settings → Authorized domains so Google Sign-In works.
